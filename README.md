@@ -7,8 +7,7 @@ Tabla de contenidos:
 - [Grafana](#grafana)
 - [Elastic](#elastic)
 - [Kibana](#kibana)
-- [Filebeat](#filebeat)
-- [Metricbeat](#metricbeat)
+- [Filebeat y Metricbeat](#filebeatmetricbeat)
 
 <div id='id-pre'/>
 
@@ -492,17 +491,10 @@ kubectl get secret quickstart-es-elastic-user -o=jsonpath='{.data.elastic}' | ba
 
 ![Interface Kibana](images/elastic1.png)
 
-<div id='filebeat' />
+<div id='filebeatmetricbeat' />
 
 ## Filebeat & Metricbeat
 
-La guía seguida para Observabilidad de Elastic a través de los beats es [https://www.elastic.co/guide/en/observability/master/monitor-kubernetes.html]
-
-1. Se ha generado un archivo de configuración para desplegar los services de filbeat: filebeat-kubernetes.yaml
-
-<div id='metricbeat' />
-
-## Metricbeat
 La guía seguida para Observabilidad de Elastic a través de los beats es [https://www.elastic.co/guide/en/observability/master/monitor-kubernetes.html]
 
 El repositorio de base usado para el despliegue ha sido: [https://github.com/elastic/examples/tree/master/k8s-observability-with-eck]
