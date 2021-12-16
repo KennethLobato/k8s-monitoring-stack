@@ -494,8 +494,44 @@ kubectl get secret quickstart-es-elastic-user -o=jsonpath='{.data.elastic}' | ba
 
 <div id='filebeat' />
 
-## Filebeat
+## Filebeat & Metricbeat
+
+La guía seguida para Observabilidad de Elastic a través de los beats es [https://www.elastic.co/guide/en/observability/master/monitor-kubernetes.html]
+
+1. Se ha generado un archivo de configuración para desplegar los services de filbeat: filebeat-kubernetes.yaml
 
 <div id='metricbeat' />
 
 ## Metricbeat
+La guía seguida para Observabilidad de Elastic a través de los beats es [https://www.elastic.co/guide/en/observability/master/monitor-kubernetes.html]
+
+El repositorio de base usado para el despliegue ha sido: [https://github.com/elastic/examples/tree/master/k8s-observability-with-eck]
+
+1. Generamos las variables de entorno en secretos para usar en la configuración de los servicios
+```
+echo elastic > ELASTICSEARCH_USERNAME
+kubectl get secret quickstart-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode > ELASTICSEARCH_PASSWORD
+echo "[\"https://$(kubectl get services | grep es-http | awk '{print $1}').default.svc.cluster.local:9200\"]" > ELASTICSEARCH_HOSTS
+echo "[\"http://$(kubectl get services | grep kb-http | awk '{print $1}').default.svc.cluster.local:9200\"]" > KIBANA_HOSTS
+```
+
+2. Creamos el secret que usarán los beats:
+```
+kubectl create secret generic dynamic-logging \
+   --from-file=./ELASTICSEARCH_HOSTS \
+   --from-file=./ELASTICSEARCH_PASSWORD \
+   --from-file=./ELASTICSEARCH_USERNAME \
+   --from-file=./KIBANA_HOSTS \
+   --namespace=kube-system
+```
+
+3. Despliegue de FileBeat
+```
+kubectl create -f filebeat-kubernetes.yaml
+```
+4. Despliegue de MetricBeat
+```
+kubectl create -f metricbeat-kubernetes.yaml
+```
+
+![Elastic Observability](images/elastic2.png)
