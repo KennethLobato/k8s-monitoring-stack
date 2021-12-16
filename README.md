@@ -7,6 +7,8 @@ Tabla de contenidos:
 - [Grafana](#grafana)
 - [Elastic](#elastic)
 - [Kibana](#kibana)
+- [Filebeat](#filebeat)
+- [Metricbeat](#metricbeat)
 
 <div id='id-pre'/>
 
@@ -489,3 +491,11 @@ kubectl get secret quickstart-es-elastic-user -o=jsonpath='{.data.elastic}' | ba
 ```
 
 ![Interface Kibana](images/elastic1.png)
+
+<div id='filebeat' />
+
+## Filebeat
+
+<div id='metricbeat' />
+
+## Metricbeat
