@@ -1,11 +1,19 @@
 # k8s-monitoring-stack
 
+Tabla de contenidos:
+- [Prerequisitos](#id-pre)
+- [Generación de cluster K8s en AWS EKS](#gen-k8s)
+- [Prometheus](#prometheus)
+- [Grafana](#grafana)
+
+<div id='id-pre'/>
 ## Prerequisitos y herramientas a tener instaladas en local con últimas versiones disponibles.
 - aws cli con cuenta configurada de AWS Access Key ID y AWS Secret Access Key
 - terraform
 - kubectl
 - helm
 
+<div id='gen-k8s'/>
 ## Generación de cluster K8s en AWS EKS
 
 Se parte de la plantilla de ejemplo de Terraform, disponible en el siguiente enlace:
@@ -119,6 +127,7 @@ Visualización de Kubernetes Dashboard:
 
 ![Kubernetes Dashboard](./images/KubernetesDashboard.png)
 
+<div id='prometheus'/>
 ## Prometheus
 
 La documentación de este README ha sido sacada del siguiente enlace: https://www.eksworkshop.com/intermediate/240_monitoring/
@@ -231,6 +240,8 @@ replicaset.apps/prometheus-server-bf5fffb66                1         1         1
 helm uninstall prometheus --namespace prometheus
 kubectl delete ns prometheus
 ```
+
+<div id='grafana'/>
 ## Grafana
 
 1) Creamos un fichero de configuración de grafana que será usado por la plantilla de helm:
