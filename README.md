@@ -226,6 +226,11 @@ replicaset.apps/prometheus-pushgateway-8655bf87b9          1         1         1
 replicaset.apps/prometheus-server-bf5fffb66                1         1         1       4m34s
 ```
 
+3) Borrado del helm de Prometheus:
+```
+helm uninstall prometheus --namespace prometheus
+kubectl delete ns prometheus
+```
 ## Grafana
 
 1) Creamos un fichero de configuración de grafana que será usado por la plantilla de helm:
@@ -338,3 +343,9 @@ kubectl get secret --namespace grafana grafana -o jsonpath="{.data.admin-passwor
 - Click ‘Import’.
 
 ![Grafana Dashboard](images/grafana3.png)
+
+6) Borrado del helm de Grafana:
+```
+helm uninstall grafana --namespace grafana
+kubectl delete ns grafana
+```
