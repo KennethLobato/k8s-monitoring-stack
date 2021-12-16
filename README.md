@@ -54,3 +54,64 @@ terraform plan
 ```
 terraform apply
 ```
+
+5) Configuramos el kubectl
+
+```
+aws eks --region $(terraform output -raw region) update-kubeconfig --name $(terraform output -raw cluster_name)
+```
+
+Verificamos la correcta vinculación del nuevo cluster:
+```
+kubectl config get-contexts
+```
+
+Revisamos nodos y pods en ejecución:
+
+```
+kubectl get nodes -o wide
+
+kubectl get pods -n kube-system
+
+kubectl get pods --all-namespaces
+```
+
+6) Despliegue de Metric Server
+```
+wget -O v0.3.6.tar.gz https://codeload.github.com/kubernetes-sigs/metrics-server/tar.gz/v0.3.6 && tar -xzf v0.3.6.tar.gz
+
+kubectl apply -f metrics-server-0.3.6/deploy/1.8+/
+
+rm -rf metrics-server-0.3.6 v0.3.6.tar.gz
+```
+
+Verificamos que se ha desplegado de forma correcta:
+```
+$ kubectl get deployment metrics-server -n kube-system
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+metrics-server   1/1     1            1           87s
+```
+
+7) Despliegue y uso de Kubernetes Dashboard
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
+```
+
+Ejecutamos un proxy para trasladar a local la comunicación con el Dashboard:
+```
+kubectl proxy
+```
+
+Abrimos el siguiente enlace en el navegador [http://127.0.0.1:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy]
+
+Creamos un Role Binding para permitir al cluster-admin acceder al cuadro de mando:
+```
+kubectl apply -f https://raw.githubusercontent.com/hashicorp/learn-terraform-provision-eks-cluster/master/kubernetes-dashboard-admin.rbac.yaml
+```
+
+Extraemos el token para acceder al Kubernetes Dashboard:
+```
+kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep service-controller-token | awk '{print $1}')
+```
+
+![Kubernetes Dashboard](iamges/KubernetesDashboard.png)
