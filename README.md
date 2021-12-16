@@ -5,6 +5,8 @@ Tabla de contenidos:
 - [Generación de cluster K8s en AWS EKS](#gen-k8s)
 - [Prometheus](#prometheus)
 - [Grafana](#grafana)
+- [Elastic](#elastic)
+- [Kibana](#kibana)
 
 <div id='id-pre'/>
 
@@ -450,6 +452,7 @@ $ curl -u "elastic:$PASSWORD" -k "https://localhost:9200"
   "tagline" : "You Know, for Search"
 }
 ```
+
 <div id='kibana' />
 
 ## Kibana
