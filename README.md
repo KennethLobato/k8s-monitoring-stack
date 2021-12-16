@@ -7,6 +7,7 @@ Tabla de contenidos:
 - [Grafana](#grafana)
 
 <div id='id-pre'/>
+
 ## Prerequisitos y herramientas a tener instaladas en local con últimas versiones disponibles.
 - aws cli con cuenta configurada de AWS Access Key ID y AWS Secret Access Key
 - terraform
@@ -363,3 +364,125 @@ kubectl get secret --namespace grafana grafana -o jsonpath="{.data.admin-passwor
 helm uninstall grafana --namespace grafana
 kubectl delete ns grafana
 ```
+
+<div id='elastic' />
+
+## Elastic
+
+La guía seguida oficial es: [https://www.elastic.co/guide/en/cloud-on-k8s/master/k8s-deploy-eck.html]
+
+1. Generamos la definición de recursos oficial de Elastic:
+```
+kubectl create -f https://download.elastic.co/downloads/eck/1.9.0/crds.yaml
+kubectl apply -f https://download.elastic.co/downloads/eck/1.9.0/operator.yaml
+```
+
+Para verificar el correcto lanzamiento del Elastic Operator podemos ver sus logs:
+```
+kubectl -n elastic-system logs -f statefulset.apps/elastic-operator
+```
+
+2. Lanzamos el cluster de ElasticSearch en K8s:
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: quickstart
+spec:
+  version: 7.16.1
+  nodeSets:
+  - name: default
+    count: 1
+    config:
+      node.store.allow_mmap: false
+EOF
+```
+Verificar el funcionamiento:
+
+```
+$ kubectl get elasticsearch
+NAME         HEALTH    NODES   VERSION   PHASE             AGE
+quickstart   unknown           7.16.1    ApplyingChanges   19s
+
+$ kubectl get pods
+NAME                      READY   STATUS    RESTARTS   AGE
+quickstart-es-default-0   1/1     Running   0          3m38s
+```
+
+3) Acceso desde local al cluster de elastic creado
+
+- Obtener dirección del servicio de Elastic desplegado
+```
+$ kubectl get service quickstart-es-http
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+quickstart-es-http   ClusterIP   172.20.30.162   <none>        9200/TCP   4m18s
+```
+- Conseguir las crendenciales de acceso. Usuario "elastic"
+```
+export PASSWORD=$(kubectl get secret quickstart-es-elastic-user -o go-template='{{.data.elastic | base64decode}}')
+```
+
+- Redireccionar el puerto del servicio a local:
+```
+kubectl port-forward service/quickstart-es-http 9200
+```
+
+- Lanzar peticion:
+```
+$ curl -u "elastic:$PASSWORD" -k "https://localhost:9200"
+{
+  "name" : "quickstart-es-default-0",
+  "cluster_name" : "quickstart",
+  "cluster_uuid" : "8rwriqpQSkq1qrHTGHamwQ",
+  "version" : {
+    "number" : "7.16.1",
+    "build_flavor" : "default",
+    "build_type" : "docker",
+    "build_hash" : "5b38441b16b1ebb16a27c107a4c3865776e20c53",
+    "build_date" : "2021-12-11T00:29:38.865893768Z",
+    "build_snapshot" : false,
+    "lucene_version" : "8.10.1",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
+  },
+  "tagline" : "You Know, for Search"
+}
+```
+<div id='kibana' />
+
+## Kibana
+
+1. Desplegamos la instancia de Kibana:
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: quickstart
+spec:
+  version: 7.16.1
+  count: 1
+  elasticsearchRef:
+    name: quickstart
+EOF
+```
+
+2. Acceso a Kibana:
+```
+$ kubectl get service quickstart-kb-http
+NAME                 TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+quickstart-kb-http   ClusterIP   172.20.50.77   <none>        5601/TCP   5m49s
+
+$ kubectl port-forward service/quickstart-kb-http 5601
+Forwarding from 127.0.0.1:5601 -> 5601
+Forwarding from [::1]:5601 -> 5601
+```
+
+Obtener la clave del usuario de kibana 'elastic' (la misma que de elastic anterior):
+```
+kubectl get secret quickstart-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode; echo
+```
+
+![Interface Kibana](images/elastic1)
