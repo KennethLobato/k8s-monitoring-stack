@@ -114,4 +114,4 @@ Extraemos el token para acceder al Kubernetes Dashboard:
 kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep service-controller-token | awk '{print $1}')
 ```
 
-![Kubernetes Dashboard](iamges/KubernetesDashboard.png)
+![Kubernetes Dashboard](./images/KubernetesDashboard.png)
