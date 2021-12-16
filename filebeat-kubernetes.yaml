@@ -38,11 +38,18 @@ data:
     #cloud.auth: ${ELASTIC_CLOUD_AUTH}
 
     output.elasticsearch:
-      hosts: ['https://10.0.3.75:9200']
+      hosts: ${ELASTICSEARCH_HOSTS}
       username: ${ELASTICSEARCH_USERNAME}
       password: ${ELASTICSEARCH_PASSWORD}
 
     output.elasticsearch.ssl.verification_mode: none
+
+    # setup.dashboards.enabled: true
+    # setup.template.enabled: true
+
+    #setup.kibana:
+    #  host: ${KIBANA_HOST}
+    #  ssl.verification_mode: none
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -72,14 +79,32 @@ spec:
           "-e",
         ]
         env:
-        - name: ELASTICSEARCH_HOST
-          value: 10.0.3.75
+        - name: ELASTICSEARCH_HOSTS
+          valueFrom:
+            secretKeyRef:
+              name: dynamic-logging
+              key: ELASTICSEARCH_HOSTS
+              optional: true
+        - name: KIBANA_HOST
+          valueFrom:
+            secretKeyRef:
+              name: dynamic-logging
+              key: KIBANA_HOSTS
+              optional: true
         - name: ELASTICSEARCH_PORT
           value: "9200"
         - name: ELASTICSEARCH_USERNAME
-          value: elastic
+          valueFrom:
+            secretKeyRef:
+              name: dynamic-logging
+              key: ELASTICSEARCH_USERNAME
+              optional: true
         - name: ELASTICSEARCH_PASSWORD
-          value: 8w7IDjNov56H9gfs5745g9Li
+          valueFrom:
+            secretKeyRef:
+              name: dynamic-logging
+              key: ELASTICSEARCH_PASSWORD
+              optional: true
         - name: ELASTIC_CLOUD_ID
           value:
         - name: ELASTIC_CLOUD_AUTH
