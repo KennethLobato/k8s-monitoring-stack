@@ -488,4 +488,4 @@ Obtener la clave del usuario de kibana 'elastic' (la misma que de elastic anteri
 kubectl get secret quickstart-es-elastic-user -o=jsonpath='{.data.elastic}' | base64 --decode; echo
 ```
 
-![Interface Kibana](images/elastic1)
+![Interface Kibana](images/elastic1.png)
