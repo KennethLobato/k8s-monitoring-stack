@@ -14,6 +14,7 @@ Tabla de contenidos:
 - helm
 
 <div id='gen-k8s'/>
+
 ## Generación de cluster K8s en AWS EKS
 
 Se parte de la plantilla de ejemplo de Terraform, disponible en el siguiente enlace:
@@ -128,6 +129,7 @@ Visualización de Kubernetes Dashboard:
 ![Kubernetes Dashboard](./images/KubernetesDashboard.png)
 
 <div id='prometheus'/>
+
 ## Prometheus
 
 La documentación de este README ha sido sacada del siguiente enlace: https://www.eksworkshop.com/intermediate/240_monitoring/
@@ -242,6 +244,7 @@ kubectl delete ns prometheus
 ```
 
 <div id='grafana'/>
+
 ## Grafana
 
 1) Creamos un fichero de configuración de grafana que será usado por la plantilla de helm:
